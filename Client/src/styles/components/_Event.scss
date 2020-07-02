@@ -1,0 +1,74 @@
+div.event-card {
+    padding: 4%;
+    color: #555;
+    transition: height 0.5s ease-in-out;
+    .settings-tab {
+        .settings-menu-btn {
+            text-align: right;
+            cursor: pointer;
+        }
+        ul.event-menu {
+            padding: 3% 3% 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.7s ease-in;
+            border-radius: 5px;
+            li {
+                list-style-type: none;
+                transition: all .4s ease-in-out;
+                cursor: pointer;
+                margin: 3% .5%;
+                font-family: Calibri;
+                font-weight: 550;
+                &:last-child {
+                    cursor: initial;
+                    color: #777;
+                    text-align: right;
+                    padding-top: 5%;
+                }
+                &:hover {
+                    color: $black;
+                    padding-left: 2%;
+                }
+            }
+        }
+    }
+    .event-name {
+        font-size: larger;
+        padding: 4% 0 5% 10%;
+        font-family: 'Trebuchet MS';
+        font-weight: 600;
+        color: #444;
+    }
+    .detail {
+        padding: 2.5%;
+        font-family: Arial, Geneva, Calibri, Arial, sans-serif;
+        font-size: large;
+        .fa {
+            font-size: large;
+        }
+    }
+    .description {
+        padding-right: 3%;
+        color: #777;
+        text-align: right;
+        font-size: initial;
+        font-weight: 550;
+        cursor: pointer;
+        .fa {
+            color: #555;
+        }
+        .description-text {
+            cursor: initial;
+            text-align: left;
+            color: #555;
+            font-family: Calibri, Geneva, Tahoma, sans-serif;
+            padding-top: 1%;
+            font-size: large;
+            font-weight: initial;
+            overflow: hidden;
+            height: 0px;
+            transition: all 0.5s ease-in;
+        }
+    }
+}

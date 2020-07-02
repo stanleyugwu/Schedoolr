@@ -1,0 +1,45 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    font-family: "Trebuchet Ms", "Helvetica", "Arial";
+    font-size: 1.6rem;
+    text-rendering: geometricPrecision;
+}
+
+// ul {
+//     list-style-position: inside;
+//     list-style-type: decimal;
+//     li {
+//         a {
+//             text-decoration: none;
+//         }
+//     }
+// }
+button {
+    cursor: pointer;
+    word-break: keep-all;
+}
+
+button:disabled {
+    opacity: .6;
+    box-shadow: none;
+    cursor: initial;
+}
+
+body::-webkit-scrollbar {
+    background: white;
+    border: 1px solid grey;
+}
+
+body::-webkit-scrollbar-thumb {
+    background: $bg;
+    border: 1px solid white;
+}

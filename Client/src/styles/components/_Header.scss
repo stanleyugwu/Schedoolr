@@ -1,0 +1,58 @@
+header.header {
+    background: $bg;
+    .date-plate {
+        text-align: center;
+        color: $white;
+        font-family: 'Courier New', Courier, monospace;
+        font-size: 2rem;
+        span.fa {
+            color: $skyblue;
+            font-size: + 1.2em
+        }
+    }
+    .header__inner {
+        display: flex;
+        justify-content: space-between;
+        padding: 1% 3% 0;
+        .add-btn {
+            button {
+                position: absolute;
+                background: $skyblue;
+                color: $bg;
+                border-radius: 100%;
+                right: 13%;
+                top: 95px;
+                border: none;
+                .fa {
+                    font-size: 9rem;
+                }
+            }
+        }
+    }
+    .menu-logo-wrapper {
+        width: 50%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+    }
+    .menu-logo-wrapper__logo {
+        img {
+            width: 180px;
+            height: 70px;
+            min-width: 130px;
+        }
+    }
+    .side-menu {
+        background: $black;
+        color: $skyblue;
+        padding: $sm-size;
+        transition: all .5s ease-in-out;
+        ul {
+            text-align: left;
+            li {
+                display: inline;
+                margin-right: 4%;
+            }
+        }
+    }
+}
