@@ -1,9 +1,9 @@
 import React from  'react';
 import DateTime from "react-datetime";
 import '../../../node_modules/react-datetime/css/react-datetime.css';
+import axios from 'axios';
 
-
-class AddEvent extends React.Component {
+class AddEditEvent extends React.Component {
 
     constructor(props){
         super(props);
@@ -26,6 +26,11 @@ class AddEvent extends React.Component {
         this.location = React.createRef();
         this.color = React.createRef();
         this.description = React.createRef();
+
+        this.state = {
+          formInCreateState: true
+        }
+
     }
 
     attributeIsSupported = (typeValue)=>{
@@ -37,18 +42,18 @@ class AddEvent extends React.Component {
     }
 
     calcSec = () => {
-
-        const day = Math.abs(Number(this.hour.current.value)) * 86400;
+        
+        //Change inputted duration to seconds
+        const day = Math.abs(Number(this.day.current.value)) * 86400;
         const hour = Math.abs(Number(this.hour.current.value)) * 3600;
         const min = Math.abs(Number(this.min.current.value)) * 60;
         const sec = Math.abs(Number(this.sec.current.value)) * 1;
 
-        return (day + hour + min + sec);
+        return (day + hour + min + sec) || 1;
 
     }
-
     handleColor = () => {
-      document.querySelector('#app').setAttribute('style',`background: ${this.color.current.value}`)
+      //document.querySelector('#app').setAttribute('style',`background: ${this.color.current.value}`)
     }
 
     returnRefValue = (ref) => {
@@ -56,7 +61,10 @@ class AddEvent extends React.Component {
     }
 
     calcDate = () => {
-      return (Number.parseInt(this.time.current.value) * 3600) + (new Date(this.date.current.value).getTime() / 1000)
+
+      //change inputted date and time to seconds
+      return new Date(this.date.current.value + ' ' + this.time.current.value).getTime()
+      
     }
 
     handleEmptyEventName = (event) => {
@@ -70,6 +78,7 @@ class AddEvent extends React.Component {
     handleCreateEvent = (event) => {
       event.preventDefault();
 
+      //construct the json data to post to server
       const payload = {
         eventName: this.eventName.current.value.trim(),
         startDate: this.calcDate(),
@@ -77,18 +86,99 @@ class AddEvent extends React.Component {
         location: this.location.current.value,
         description: this.description.current.value,
         attendees: Number(this.guests.current.value),
-        color: this.color.current.value,
+        color: (this.color.current.value) == '#ffffff' ? '#444444' : this.color.current.value,
         notified: (this.email.current.value.length > 1) ? false : true,
         createdAt: new Date().getTime(),
         notificationEmail: this.email.current.value
-      }
+      };
 
+      if(this.state.formInCreateState){
+        axios.post("http://localhost:4000/api/add", payload).then((res)=>{
+          alert(res.status)
+          if(res.status === 200){
+            console.log('data stored');
+            this.props.history.push('/')
+          }
+        }).catch((err)=>{
+          console.log(err)
+        });
+      }else if(!this.state.formInCreateState){
+       // axios.put('')
+      }
     }
+
+
+    componentDidMount(){
+
+      document.querySelector('header .add-btn').setAttribute('style', `display: ${this.state.formInCreateState ? 'none' : 'initial'}`)
+
+      //If theres id in the url parameter, fetch the event with id from database and populate the form
+      if (this.props.match.params.id) {
+        axios.get('http://localhost:4000/api/get/' + this.props.match.params.id).then((res)=>{
+        this.setState({ formInCreateState: false });
+
+        //fetch the event with provided id
+        /* const event = {
+          eventName: "Birthday",
+          startDate: 1593802565816,
+          duration: 86920,
+          location: "hdjhjhsjh",
+          description: "shjshjdshjdhsj",
+          attendees: 89,
+          color: "#173908",
+          notified: true,
+          createdAt: 7873874334,
+          notificationEmail: "stanley@gmail.com"
+        } */
+
+        const event = res.data.Data;
+        
+
+        //transforming startDate into date
+        //First Algorithm::
+        /* var dt = new Date(event.startDate).toLocaleDateString().split('/');//Convert date to array
+        var mnt = dt[0].length === 1 ? '0'+dt[0] : dt[0];//prefix month with trailing 0 if less than 10
+        var dy = dt[1].length === 1 ? '0' + dt[1] : dt[1];//prefix month with trailing 0 if less than 10
+        var date = [dt[2]/*year*///,mnt,dy].join('-');//rearrange date into yy:mm:dd */
+
+        //Second Algorithm
+        var dte = new Date(event.startDate).toISOString();
+        var date = dte.substring(0, dte.indexOf('T'));
+
+        //Transforming startDate into Time
+        var tme = new Date(event.startDate).toISOString();
+        var time = tme.substr(tme.indexOf('T', 4) + 1, 5);
+
+        //transforming duration from seconds to dd:hh:mm:ss
+        var sec = event.duration;
+        var day = Math.floor(sec / 86400)
+        sec %= 86400
+        var hour = Math.floor(sec / 3600)
+        sec %= 3600
+        var min = Math.floor(sec / 60)
+        var seconds = sec % 60
+
+        //Populate Input tags with fetched data through refs
+        this.eventName.current.value = event.eventName;
+        this.date.current.value = date;
+        this.time.current.value = time;
+        this.day.current.value = day;
+        this.hour.current.value = hour;
+        this.min.current.value = min;
+        this.sec.current.value = seconds;
+        this.location.current.value = event.location;
+        this.guests.current.value = event.attendees;
+        this.email.current.value = event.notificationEmail;
+        this.color.current.value = event.color;
+        this.description.current.value = event.description;
+      })
+    };
+  }
 
     render(){
         return (
           <form className="add-form" onSubmit={this.handleCreateEvent}>
-            <p className="form-label">Add New Event</p>
+            <p className="form-label">{this.state.formInCreateState ? 'Add New Event' : 'Editing Event'}</p>
             <div className="form-field name">
               <p className="field-label">Event Name:</p>
               <input
@@ -122,6 +212,7 @@ class AddEvent extends React.Component {
                       min="1800-01-01"
                       max="2070-12-25"
                       required
+                      defaultValue={new Date().toISOString().substring(0, new Date().toISOString().indexOf('T'))}
                       ref={this.date}
                     ></input>
                   </div>
@@ -129,9 +220,7 @@ class AddEvent extends React.Component {
                     <p>Time:</p>
                     <input
                       type="time"
-                      min="1800-01-01"
-                      max="2070-12-25"
-                      defaultValue="00:00:00"
+                      defaultValue="00:00"
                       ref={this.time}
                     ></input>
                   </div>
@@ -162,7 +251,7 @@ class AddEvent extends React.Component {
                   max="30"
                   min="0"
                   name="day"
-                  defaultValue="1"
+                  defaultValue="0"
                   style={{ width: 60 + "px" }}
                   ref={this.day}
                 ></input>
@@ -174,7 +263,7 @@ class AddEvent extends React.Component {
                   max="23"
                   min="0"
                   name="hour"
-                  defaultValue="1"
+                  defaultValue="0"
                   style={{ width: 60 + "px" }}
                   ref={this.hour}
                 ></input>
@@ -186,7 +275,7 @@ class AddEvent extends React.Component {
                   max="59"
                   min="0"
                   name="minute"
-                  defaultValue="1"
+                  defaultValue="0"
                   style={{ width: 60 + "px" }}
                   ref={this.min}
                 ></input>
@@ -197,7 +286,7 @@ class AddEvent extends React.Component {
                   type="number"
                   max="59"
                   min="0"
-                  defaultValue="1"
+                  defaultValue="0"
                   name="second"
                   style={{ width: 60 + "px" }}
                   ref={this.sec}
@@ -245,7 +334,7 @@ class AddEvent extends React.Component {
             </div>
 
             <div className="form-field submit">
-              <button type="submit" value="Submit" id="submit-btn">Submit</button>
+              <button type="submit" value="Submit" id="submit-btn">{this.state.formInCreateState ? 'Add Event' : 'Update Event'}</button>
             </div>
           </form>
         );
@@ -253,4 +342,4 @@ class AddEvent extends React.Component {
 
 }
 
-export default AddEvent;
+export default AddEditEvent;

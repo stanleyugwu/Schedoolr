@@ -23,6 +23,7 @@ header.header {
                 right: 13%;
                 top: 95px;
                 border: none;
+                outline: none;
                 .fa {
                     font-size: 9rem;
                 }
@@ -50,6 +51,17 @@ header.header {
         ul {
             text-align: left;
             li {
+                .navlink {
+                    color: $skyblue;
+                    transition: all .3s ease-in-out;
+                    text-decoration: none;
+                    &:hover {
+                        color: transparentize($color: $skyblue, $amount: 0.5)
+                    }
+                }
+                .navlink-active {
+                    font-weight: 700;
+                }
                 display: inline;
                 margin-right: 4%;
             }

@@ -1,5 +1,7 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import {Link} from 'react-router-dom';
+
+
 
 class Event extends React.Component{
 
@@ -28,7 +30,27 @@ class Event extends React.Component{
         })
     }
 
+    calcSec(duration){
+
+         //Change inputted duration to seconds
+        let sec = duration
+        const day = Math.floor(sec / 86400) > 0 ? Math.floor(sec / 86400) + `Day${Math.floor(sec / 86400) > 1 ? 's ' : ' '}` : '';
+        sec %= 86400;
+        const hour = Math.floor(sec / 3600) > 0 ? Math.floor(sec / 3600) + `Hour${Math.floor(sec / 3600) > 1 ? 's ' : ' '}` : '';
+        sec %= 3600;
+        const min =Math.floor(sec / 60) > 0 ? Math.floor(sec / 60) + `Min${Math.floor(sec / 60) > 1 ? 's' : ' '}` : '';
+        sec %= 60;
+        const seconds = sec > 0 ? sec + 'Sec' : '';//(Math.floor(sec / 60) == 0) ? '' : sec //: Math.floor(sec) + 'Sec' //> 0) ? Math.floor(sec) + 'sec' : ''//> 0 ? sec + 'Sec' : ''//> 0 ? sec + `second` : '';
+        //${sec % 60 > 1 ? 's' : ''}` : '' ;
+
+
+        const dur = day + '' + hour + '' + min + '' + seconds
+        
+        return dur;
+    }
+
     render(){
+       
         const event = this.props.event;
         const state = this.state;
         return (
@@ -39,19 +61,19 @@ class Event extends React.Component{
                         { maxHeight: state.menuDropped ? 800 + 'px' : 0,
                         boxShadow: state.menuDropped ? '0px 0px 7px #777' : 'none' }
                     }>
-                            <li><span className="fa fa-pen"></span>&ensp;<span>Edit</span></li>
+                            <li><Link to={'/addEdit/' + event._id} className="Link"><span className="fa fa-pen"></span>&ensp;<span>Edit</span></Link></li>
                             <li><span className="fa fa-trash"></span>&ensp;<span>Delete</span></li>
                             <li><span className="fa fa-copy"></span>&ensp;<span>Copy</span></li>
-                            <li><span>Created:{event.createdAt}</span></li>
+                            <li><span>Created: {new Date(event.createdAt).toDateString()}</span></li>
                         </ul>
                 </div>
                 <div className="event-name"> <i className="fa fa-link" aria-hidden="true"></i> {event.eventName}</div>
                 <div className="detail event-location"><span className="fa fa-map-marker"></span>&ensp;<span> {event.location}</span></div>
                 <div className="timing-section">
-                    <div className="detail event-startDate"><span className="fa fa-clock"></span>&ensp;<span>{event.startDate}</span></div>
-                    <div className="detail event-duration"><span className="fa fa-stopwatch"></span>&ensp;<span>{Math.floor(event.duration / 1000 / 60)}</span></div>
+                    <div className="detail event-startDate"><span className="fa fa-clock"></span>&ensp;<span>{new Date(event.startDate).toLocaleDateString().replace(/\//g, '-')} @ {new Date(event.startDate).toLocaleTimeString()}</span></div>
+                    <div className="detail event-duration"><span className="fa fa-stopwatch"></span>&ensp;<span>{this.calcSec(event.duration)}</span></div>
                 </div>
-                <div className="detail attendees"><span className="fa fa-users"></span>&ensp;<span>{event.attendees} Attendees</span></div>
+                <div className="detail attendees"><span className="fa fa-users"></span>&ensp;<span>{event.attendees} Attendee{event.attendees > 1 ? 's' : ''}</span></div>
                 <div className="detail description">
                     <span onClick={this.dropDesc}>
                         Description&ensp;<span className={state.descriptionDropped ? 'fa fa-caret-up' : 'fa fa-caret-down'}></span>

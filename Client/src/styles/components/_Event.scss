@@ -14,6 +14,13 @@ div.event-card {
             transition: all 0.7s ease-in;
             border-radius: 5px;
             li {
+                .Link {
+                    color: #555;
+                    text-decoration: none;
+                    &:hover {
+                        color: $black;
+                    }
+                }
                 list-style-type: none;
                 transition: all .4s ease-in-out;
                 cursor: pointer;
@@ -35,15 +42,16 @@ div.event-card {
     }
     .event-name {
         font-size: larger;
-        padding: 4% 0 5% 10%;
+        padding: 4% 0 7% 10%;
         font-family: 'Trebuchet MS';
         font-weight: 600;
         color: #444;
     }
     .detail {
         padding: 2.5%;
-        font-family: Arial, Geneva, Calibri, Arial, sans-serif;
-        font-size: large;
+        font-family: Geneva, Calibri, Arial, sans-serif;
+        font-size: 1.8rem;
+        font-weight: 550;
         .fa {
             font-size: large;
         }
