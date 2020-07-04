@@ -85,7 +85,8 @@ setInterval(function(){
         else{
             events.map((event)=>{
                 if(new Date(event.startDate).getTime() <= date/* || Math.ceil(((event.startDate - date) /1000)) <= 5 */){
-                    console.log('Event reached')
+                    console.log('Event reached');
+                    sendMail();
                     const newDoc = {
                         eventName: event.eventName,
                         startDate: event.startDate,
@@ -119,6 +120,19 @@ app.get("/api/events", (req, res) => {
     console.log('Request Recieved!! ' + requestCounter);
     Events.find((err, events)=>{
         if(err){res.status(400).send(err)}else{res.json(events)}
+    })
+});
+
+//Get Single event
+app.get("/api/get/:id", (req, res) => {
+    var id = req.params.id;
+    var data = req.body;
+    Events.findOne({ _id: id }, (err, doc) => {
+        if (err) {
+            res.status(400).json({ "status": "Get FAILED!!", "Error": err })
+        } else {
+            res.status(200).json({ "Status": "Get Successful", "Data": doc })
+        }
     })
 });
 
