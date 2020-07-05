@@ -38,7 +38,7 @@ class Event extends React.Component{
         sec %= 86400;
         const hour = Math.floor(sec / 3600) > 0 ? Math.floor(sec / 3600) + `Hour${Math.floor(sec / 3600) > 1 ? 's ' : ' '}` : '';
         sec %= 3600;
-        const min =Math.floor(sec / 60) > 0 ? Math.floor(sec / 60) + `Min${Math.floor(sec / 60) > 1 ? 's' : ' '}` : '';
+        const min =Math.floor(sec / 60) > 0 ? Math.floor(sec / 60) + `Min${Math.floor(sec / 60) > 1 ? 's ' : ' '}` : '';
         sec %= 60;
         const seconds = sec > 0 ? sec + 'Sec' : '';//(Math.floor(sec / 60) == 0) ? '' : sec //: Math.floor(sec) + 'Sec' //> 0) ? Math.floor(sec) + 'sec' : ''//> 0 ? sec + 'Sec' : ''//> 0 ? sec + `second` : '';
         //${sec % 60 > 1 ? 's' : ''}` : '' ;

@@ -19,11 +19,28 @@ class Events extends React.Component{
             this.setState({events: res.data});
             this.setState({loading: false})
         })
-    }
+      }
     
 
     componentDidMount(){
-        setInterval(this.fetchData, 10000)
+      //show add-btn
+      document.querySelector('header .add-btn').setAttribute('style', 'display:initial');
+
+      //load cached data from localStorage into state and prevent loading,
+      //and re-fetching data for some seconds else load and fetch data
+      if(localStorage.eventlyDataCache){
+        this.setState({events: JSON.parse(localStorage.getItem('data')), loading: false});
+        this.interval = setInterval(this.fetchData, 5000);
+      }else{
+        this.interval = setInterval(this.fetchData, 5000);
+      }
+    }
+
+    componentWillUnmount(){
+      //when unmounting component, stop fetching new data, and store current data
+      //in localStorage as cache so as to prevent refetch when component remounts
+      clearInterval(this.interval);
+      localStorage.setItem('eventlyDataCache',JSON.stringify(this.state.events));
     }
 
     render(){

@@ -79,7 +79,6 @@ setInterval(function () {
 
 //Daemon 2
 setInterval(function(){
-    const date = new Date().getTime();
     Events.find((err, events) => {
         if(err){console.log('Error Accessing Table')}
         else{

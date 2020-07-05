@@ -28,11 +28,13 @@ class AddEditEvent extends React.Component {
         this.description = React.createRef();
 
         this.state = {
-          formInCreateState: true
+          formInCreateState: true,
+          editingId:''
         }
 
-    }
 
+    }
+    
     attributeIsSupported = (typeValue)=>{
         let element = document.createElement('input');
         let attributeValue = 'test';
@@ -71,13 +73,12 @@ class AddEditEvent extends React.Component {
       event.target.value.startsWith(" ") ? event.target.value = "" : event.target.value
     }
 
-  handleEmptyLocation = (event) => {
-    event.target.value.startsWith(" ") ? event.target.value = "" : event.target.value
-  }
+    handleEmptyLocation = (event) => {
+      event.target.value.startsWith(" ") ? event.target.value = "" : event.target.value
+    }
 
     handleCreateEvent = (event) => {
       event.preventDefault();
-
       //construct the json data to post to server
       const payload = {
         eventName: this.eventName.current.value.trim(),
@@ -87,35 +88,40 @@ class AddEditEvent extends React.Component {
         description: this.description.current.value,
         attendees: Number(this.guests.current.value),
         color: (this.color.current.value) == '#ffffff' ? '#444444' : this.color.current.value,
-        notified: (this.email.current.value.length > 1) ? false : true,
+        notified: (this.email.current.value.length > 1) ? faxlse : true,
         createdAt: new Date().getTime(),
         notificationEmail: this.email.current.value
       };
-
       if(this.state.formInCreateState){
         axios.post("http://localhost:4000/api/add", payload).then((res)=>{
-          alert(res.status)
           if(res.status === 200){
             console.log('data stored');
-            this.props.history.push('/')
+            this.props.history.push('/');
           }
         }).catch((err)=>{
           console.log(err)
         });
       }else if(!this.state.formInCreateState){
-       // axios.put('')
+        axios.put('http://localhost:4000/api/modify/' + this.state.editingId, payload).then((res)=>{
+          if(res.status == 200){
+            console.log('Updated');
+            this.props.history.push('/');
+          }else{
+            console.log('Failed'+res)
+          }
+        })
       }
     }
 
-
     componentDidMount(){
 
-      document.querySelector('header .add-btn').setAttribute('style', `display: ${this.state.formInCreateState ? 'none' : 'initial'}`)
-
+   
       //If theres id in the url parameter, fetch the event with id from database and populate the form
       if (this.props.match.params.id) {
+
         axios.get('http://localhost:4000/api/get/' + this.props.match.params.id).then((res)=>{
         this.setState({ formInCreateState: false });
+        this.setState({editingId: this.props.match.params.id});
 
         //fetch the event with provided id
         /* const event = {
@@ -172,7 +178,10 @@ class AddEditEvent extends React.Component {
         this.color.current.value = event.color;
         this.description.current.value = event.description;
       })
-    };
+      } else if (!this.props.match.params.id) {
+        this.setState({ formInCreateState: true });
+        document.querySelector('header .add-btn').setAttribute('style', `display: ${this.state.formInCreateState ? 'none' : 'initial'}`);
+      }
   }
 
     render(){
