@@ -33,15 +33,18 @@ app.use((req, res, next) => {
     next();
 });
 
-//Send Email
-function sendMail(data){
-    console.log('Sent');
+//Send 10 minutes Email
+function sendReminderMail(data){
+    console.log(data.eventName + 'starting in less than 10 minutes');
+}
+
+//send event-started Email
+function sendEventStartedMail(data){
+    console.log(data.eventName + 'started')
 }
 
 //Daemon 1 (Background Process for tracking events time and sending reminder emails)
 setInterval(function () {
-
-    const date = new Date().getTime();//get Current Date
 
     Events.find((err, events) => {
 
@@ -54,21 +57,26 @@ setInterval(function () {
             const remainingTime = Math.ceil((new Date(event.startDate).getTime() - new Date().getTime()) / 60000); //Calculate Remaining Minutes Before Event Starts
             
             if (remainingTime > 0 && remainingTime <= 10/*notification time*/ && event.notificationEmail && !event.notified) {
-                console.log(remainingTime)
 
-                sendMail(event);//Send Email
+                sendReminderMail(event);//Send Email
 
                 event.notified = true;//mark event as notified
 
                 //Save back event
                 event.save(function(err, res){
-                    if(err){console.log(err)}
+                    if(err){
+                        console.log(err);
+                        event.notified = false;//set room for re-mailing if failed to save
+                    }
                 });
                 
             } else if (remainingTime > 0 && remainingTime <= 10/*notification time*/ && !!event.notificationEmail && !event.notified) {
                 event.notified = true;
                 event.save(function (err, res) {
-                    if (err) { console.log(err) }
+                    if (err) {
+                        console.log(err);
+                        event.notified = false;
+                    }
                 })
                 
             }
@@ -79,13 +87,37 @@ setInterval(function () {
 
 //Daemon 2
 setInterval(function(){
+    const date = new Date().getTime();
     Events.find((err, events) => {
         if(err){console.log('Error Accessing Table')}
         else{
             events.map((event)=>{
-                if(new Date(event.startDate).getTime() <= date/* || Math.ceil(((event.startDate - date) /1000)) <= 5 */){
-                    console.log('Event reached');
-                    sendMail();
+                if(new Date(event.startDate).getTime() <= date && Math.floor((date - new Date(event.startDate).getTime()) / 60000) <= 2 && event.notificationEmail.length > 1/*if event has reached or passed unknowingly and its less than 2 minutes passed and theres email for notif, then send mail  */){
+                    
+                    sendEventStartedMail(event);
+
+                    const newDoc = {
+                        eventName: event.eventName,
+                        startDate: event.startDate,
+                        duration: event.duration,
+                        location: event.location,
+                        description: event.description,
+                        attendees: event.attendees,
+                        color: event.color,
+                        notified: event.notified,
+                        createdAt: event.createdAt,
+                        notificationEmail: event.notificationEmail
+                    };
+
+                    const expired = new Expired(newDoc);
+
+                    expired.save();//move event to expired
+                    event.remove();//remove from events
+
+                } else if (new Date(event.startDate).getTime() <= date && Math.floor((date - new Date(event.startDate).getTime()) / 60000) > 5){
+                    
+                    console.log('Event reached but too late for reminding');
+                    
                     const newDoc = {
                         eventName: event.eventName,
                         startDate: event.startDate,
@@ -102,6 +134,29 @@ setInterval(function(){
                     const expired = new Expired(newDoc);
                     expired.save();
                     event.remove();
+
+                } else if (new Date(event.startDate).getTime() < date) {
+
+
+                    console.log('Event Passed');
+
+                    const newDoc = {
+                        eventName: event.eventName,
+                        startDate: event.startDate,
+                        duration: event.duration,
+                        location: event.location,
+                        description: event.description,
+                        attendees: event.attendees,
+                        color: event.color,
+                        notified: event.notified,
+                        createdAt: event.createdAt,
+                        notificationEmail: event.notificationEmail
+                    };
+
+                    const expired = new Expired(newDoc);
+                    expired.save();
+                    event.remove();
+
                 }
             });
         }

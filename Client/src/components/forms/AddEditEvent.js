@@ -9,7 +9,6 @@ class AddEditEvent extends React.Component {
         super(props);
         this.attributeIsSupported = this.attributeIsSupported.bind(this);
         this.calcSec = this.calcSec.bind(this);
-        this.handleColor = this.handleColor.bind(this);
         this.returnRefValue = this.returnRefValue.bind(this);
         this.calcDate = this.calcDate.bind(this);
 
@@ -54,9 +53,6 @@ class AddEditEvent extends React.Component {
         return (day + hour + min + sec) || 1;
 
     }
-    handleColor = () => {
-      //document.querySelector('#app').setAttribute('style',`background: ${this.color.current.value}`)
-    }
 
     returnRefValue = (ref) => {
       return !!this.ref.current.value ? this.ref.current.value : null
@@ -88,7 +84,7 @@ class AddEditEvent extends React.Component {
         description: this.description.current.value,
         attendees: Number(this.guests.current.value),
         color: (this.color.current.value) == '#ffffff' ? '#444444' : this.color.current.value,
-        notified: (this.email.current.value.length > 1) ? faxlse : true,
+        notified: (this.email.current.value.length > 1) ? false : true,
         createdAt: new Date().getTime(),
         notificationEmail: this.email.current.value
       };
@@ -96,6 +92,9 @@ class AddEditEvent extends React.Component {
         axios.post("http://localhost:4000/api/add", payload).then((res)=>{
           if(res.status === 200){
             console.log('data stored');
+
+            //Clear Cache So as to cause loading in homepage/events page
+            localStorage.setItem('eventlyDataCache', JSON.stringify([]));
             this.props.history.push('/');
           }
         }).catch((err)=>{
@@ -333,7 +332,6 @@ class AddEditEvent extends React.Component {
                 type="color"
                 defaultValue="#001c40"
                 ref={this.color}
-                onChange={this.handleColor}
               ></input>
             </div>
 

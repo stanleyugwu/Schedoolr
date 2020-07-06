@@ -17,7 +17,7 @@ class Events extends React.Component{
     fetchData(){
         axios.get('http://localhost:4000/api/events').then((res) => {
             this.setState({events: res.data});
-            this.setState({loading: false})
+            this.setState({loading: false});
         })
       }
     
@@ -28,11 +28,12 @@ class Events extends React.Component{
 
       //load cached data from localStorage into state and prevent loading,
       //and re-fetching data for some seconds else load and fetch data
-      if(localStorage.eventlyDataCache){
-        this.setState({events: JSON.parse(localStorage.getItem('data')), loading: false});
-        this.interval = setInterval(this.fetchData, 5000);
+      if(!!localStorage.eventlyDataCache && JSON.parse(localStorage.eventlyDataCache).length >= 1){
+        this.setState({events: JSON.parse(localStorage.getItem('eventlyDataCache')), loading: false});
+        this.interval = setInterval(this.fetchData, 3000);
+        //localStorage.setItem('eventlyDataCache',JSON.stringify([]))
       }else{
-        this.interval = setInterval(this.fetchData, 5000);
+        this.interval = setInterval(this.fetchData, 3000);
       }
     }
 

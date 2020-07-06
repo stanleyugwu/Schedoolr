@@ -70,10 +70,12 @@ class Event extends React.Component{
                 <div className="event-name"> <i className="fa fa-link" aria-hidden="true"></i> {event.eventName}</div>
                 <div className="detail event-location"><span className="fa fa-map-marker"></span>&ensp;<span> {event.location}</span></div>
                 <div className="timing-section">
-                    <div className="detail event-startDate"><span className="fa fa-clock"></span>&ensp;<span>{new Date(event.startDate).toLocaleDateString().replace(/\//g, '-')} @ {new Date(event.startDate).toLocaleTimeString()}</span></div>
+                    <div className="detail event-startDate"><span className="fa fa-clock"></span>&ensp;<span>{new Date(event.startDate).toLocaleDateString().replace(/\//g, '-')} @ {new Date(event.startDate).toLocaleTimeString()} {(event.notified && event.notificationEmail.length > 3) ? <i className="fa fa-bell" style={{color:'#ff9800',transform: 'rotate(-35deg)'}} aria-hidden="true"></i> : ''/*Show bell icon when event is notified*/}</span></div>
                     <div className="detail event-duration"><span className="fa fa-stopwatch"></span>&ensp;<span>{this.calcSec(event.duration)}</span></div>
                 </div>
                 <div className="detail attendees"><span className="fa fa-users"></span>&ensp;<span>{event.attendees} Attendee{event.attendees > 1 ? 's' : ''}</span></div>
+                <div className="detail email">{event.notificationEmail.length > 3 ? <span><span className="fa fa-bell"></span>&ensp;<span className="email-address">{event.notificationEmail}</span></span> : <span>  </span>}</div>
+
                 <div className="detail description">
                     <span onClick={this.dropDesc}>
                         Description&ensp;<span className={state.descriptionDropped ? 'fa fa-caret-up' : 'fa fa-caret-down'}></span>

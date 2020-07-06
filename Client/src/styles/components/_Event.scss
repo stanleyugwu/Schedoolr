@@ -47,13 +47,20 @@ div.event-card {
         font-weight: 600;
         color: #444;
     }
+    .email {
+        .email-address {
+            font-size: small;
+            font-weight: 800;
+        }
+    }
     .detail {
         padding: 2.5%;
         font-family: Geneva, Calibri, Arial, sans-serif;
-        font-size: 1.8rem;
+        font-size: 1.7rem;
         font-weight: 550;
         .fa {
             font-size: large;
+            color: $bg;
         }
     }
     .description {
