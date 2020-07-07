@@ -34,12 +34,13 @@ const Header = (props) => {
             </header>
         )
         /* #001c40 */
-    }
+}
 
 //Tick Time
-function tick(){
+const tick = () => {
     ReactDOM.render(<span><span className="fa fa-calendar-alt"></span> {new Date().toDateString()}&emsp;<span className="fa fa-clock"></span> {new Date().toLocaleTimeString()}</span>, document.querySelector('.date-plate'))
 }
+
 setInterval(tick, 1000)
 
 export default Header;

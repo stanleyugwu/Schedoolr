@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const cors = require('cors');
 const PORT = 4000;
 
 
@@ -21,30 +22,24 @@ mongoose.set('useUnifiedTopology',true);
 const database = 'Evently';
 mongoose.connect('mongodb://127.0.0.1:27017/'+database, {useNewUrlParser: true})
 const con = mongoose.connection;
-con.once('open',()=>{console.log("Server has established connection to database:",database)});
+con.once('open', ()=>{console.log("Server has established connection to database:",database)});
+
 
 //Enable CORS
-app.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header(
-        "Access-Control-Allow-Headers",
-        "Origin, X-Requested-With, Content-Type, Accept"
-    );
-    next();
-});
+app.use(cors({origin: '*'}));
 
 //Send 10 minutes Email
-function sendReminderMail(data){
+const sendReminderMail = (data) => {
     console.log(data.eventName + 'starting in less than 10 minutes');
 }
 
 //send event-started Email
-function sendEventStartedMail(data){
+const sendEventStartedMail = (data) => {
     console.log(data.eventName + 'started')
 }
 
 //Daemon 1 (Background Process for tracking events time and sending reminder emails)
-setInterval(function () {
+setInterval(() => {
 
     Events.find((err, events) => {
 
@@ -63,7 +58,7 @@ setInterval(function () {
                 event.notified = true;//mark event as notified
 
                 //Save back event
-                event.save(function(err, res){
+                event.save((err, res) => {
                     if(err){
                         console.log(err);
                         event.notified = false;//set room for re-mailing if failed to save
@@ -72,7 +67,7 @@ setInterval(function () {
                 
             } else if (remainingTime > 0 && remainingTime <= 10/*notification time*/ && !!event.notificationEmail && !event.notified) {
                 event.notified = true;
-                event.save(function (err, res) {
+                event.save((err, res) => {
                     if (err) {
                         console.log(err);
                         event.notified = false;
@@ -86,7 +81,7 @@ setInterval(function () {
 
 
 //Daemon 2
-setInterval(function(){
+setInterval(() => {
     const date = new Date().getTime();
     Events.find((err, events) => {
         if(err){console.log('Error Accessing Table')}
@@ -166,21 +161,25 @@ setInterval(function(){
 //Daemons Ended
 
 
-var requestCounter = 0;
+let requestCounter = 0;
 
 //Get Events
 app.get("/api/events", (req, res) => {
     requestCounter+=1;
-    console.log('Request Recieved!! ' + requestCounter);
+    console.log('Client Wants Events ' + requestCounter);
     Events.find((err, events)=>{
-        if(err){res.status(400).send(err)}else{res.json(events)}
+        if(err){
+            res.status(400).send(err);
+        }else{
+            res.status(200).json(events);
+            console.log('Events Sent!')
+        }
     })
 });
 
 //Get Single event
 app.get("/api/get/:id", (req, res) => {
-    var id = req.params.id;
-    var data = req.body;
+    const id = req.params.id;
     Events.findOne({ _id: id }, (err, doc) => {
         if (err) {
             res.status(400).json({ "status": "Get FAILED!!", "Error": err })
@@ -206,7 +205,7 @@ app.post("/api/events/expired/clear", (req, res) => {
 
 //Add Events
 app.post("/api/add", (req, res) => {
-    var event = new Events(req.body);
+    const event = new Events(req.body);
     event.save().then(event => {
         res.status(200).json({'status':'Added successfully!',"Added:":event})
     }).catch(err => {
@@ -217,8 +216,8 @@ app.post("/api/add", (req, res) => {
 
 //Delete event
 app.delete("/api/delete/:id", (req, res) => {
-    var id = req.params.id;
-    Events.deleteOne({ _id: new mongoose.Types.ObjectId(id) }, function (err, results) {
+    const id = req.params.id;
+    Events.deleteOne({ _id: new mongoose.Types.ObjectId(id) }, (err, results) => {
         if(err){res.status(400).json({"status":"NOT! Deleted","error":err})}else{res.send('Deleted Successfully!')}
     });
 });
@@ -226,15 +225,15 @@ app.delete("/api/delete/:id", (req, res) => {
 
 //Update event
 app.put("/api/modify/:id", (req, res) => {
-    var id = req.params.id;
-    var data = req.body;
+    const id = req.params.id;
+    const data = req.body;
     Events.findOneAndUpdate({_id:id}, data, {'useFindAndModify': false}, (err, doc)=>{
         if(err){
             res.status(400).json({"status":"MODIFICATION FAILED!!","Error":err})
     }else{
         res.status(200).json({"Status":"Update Successful","Data":doc})
     }
-    })
+    });
 });
 
 

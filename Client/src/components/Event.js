@@ -1,12 +1,16 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-
+import axios from 'axios';
 
 
 class Event extends React.Component{
 
     constructor(props){
-        super(props)
+        super(props);
+        this.dropMenu = this.dropMenu.bind(this);
+        this.dropDesc = this.dropDesc.bind(this);
+        this.calcSec = this.calcSec.bind(this);
+        this.handleDelete = this.handleDelete.bind(this)
 
         this.state = {
             menuDropped: false,
@@ -14,25 +18,27 @@ class Event extends React.Component{
         }
     }
 
+    //toggle event menu dropping
     dropMenu = () => {
-        this.setState(function(prevState){
+        this.setState((prevState) => {
             return {
                 menuDropped: prevState.menuDropped ? false : true
             }
         })
     }
 
+    //toggle description dropping
     dropDesc = () => {
-        this.setState(function (prevState) {
+        this.setState((prevState) => {
             return {
                 descriptionDropped: prevState.descriptionDropped ? false : true
             }
         })
     }
 
-    calcSec(duration){
+    //Change inputted duration to seconds
+    calcSec = (duration) => {
 
-         //Change inputted duration to seconds
         let sec = duration
         const day = Math.floor(sec / 86400) > 0 ? Math.floor(sec / 86400) + `Day${Math.floor(sec / 86400) > 1 ? 's ' : ' '}` : '';
         sec %= 86400;
@@ -49,10 +55,23 @@ class Event extends React.Component{
         return dur;
     }
 
+    //delete event
+    handleDelete = (id) => {
+        axios.delete('http://localhost:4000/api/delete/' + id).then((res)=>{
+            console.log(res.data)
+            if(res.status == 200){
+                
+            }
+            //this.props.history.push('/');
+        });
+         
+    }
+    
     render(){
        
         const event = this.props.event;
         const state = this.state;
+
         return (
             <div className="event-card">
                 <div className="settings-tab">
@@ -62,7 +81,7 @@ class Event extends React.Component{
                         boxShadow: state.menuDropped ? '0px 0px 7px #777' : 'none' }
                     }>
                             <li><Link to={'/addEdit/' + event._id} className="Link"><span className="fa fa-pen"></span>&ensp;<span>Edit</span></Link></li>
-                            <li><span className="fa fa-trash"></span>&ensp;<span>Delete</span></li>
+                        <li onClick={() => {this.handleDelete(event._id)}}><span className="fa fa-trash"></span>&ensp;<span>Delete</span></li>
                             <li><span className="fa fa-copy"></span>&ensp;<span>Copy</span></li>
                             <li><span>Created: {new Date(event.createdAt).toDateString()}</span></li>
                         </ul>
@@ -80,13 +99,7 @@ class Event extends React.Component{
                     <span onClick={this.dropDesc}>
                         Description&ensp;<span className={state.descriptionDropped ? 'fa fa-caret-up' : 'fa fa-caret-down'}></span>
                     </span>
-                    <div className="description-text"
-                        style={
-                            {
-                                height: state.descriptionDropped ? 'auto' : 0,
-                            }
-                        }
-                    >
+                    <div className="description-text" style={{height: state.descriptionDropped ? 'auto' : 0,}}>
                         {event.description}
                     </div>
                 </div>

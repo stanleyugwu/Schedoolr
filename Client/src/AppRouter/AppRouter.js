@@ -19,6 +19,7 @@ const AppRouter = () => (
         <Route path="/addEdit" component={AddEditEvent} />
         <Route path="/about" component={About} />
         <Route path="/how-it-works" component={Onboard} />
+        <Route path="/edit/:id" component={EditEvent} />
         <Route component={NotFoundPage} />
       </Switch>
     </div>

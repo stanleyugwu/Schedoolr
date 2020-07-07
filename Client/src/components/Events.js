@@ -5,21 +5,37 @@ import "../../node_modules/react-loader-spinner/dist/loader/css/react-spinner-lo
 import Loader from "react-loader-spinner";
 
 class Events extends React.Component{
+
     constructor(props){
         super(props);
         this.fetchData = this.fetchData.bind(this);
     }
-        state = {
-            events: [],
-            loading: true
+
+    state = {
+        events: [],
+        loading: true
+    }
+
+    //fetch events from database and set state
+    fetchData = () => {
+
+        axios.get('http://localhost:4000/api/events').then((res) => {
+
+        if(res.status == 200){
+          if (!!localStorage.eventlyDataCache) {
+            localStorage.removeItem('eventlyDataCache');
+          }
+          this.setState(() => {
+            return { events: res.data, loading: false }
+          }
+          );
+        }else {
+          console.log('Failed to get events')
         }
 
-    fetchData(){
-        axios.get('http://localhost:4000/api/events').then((res) => {
-            this.setState({events: res.data});
-            this.setState({loading: false});
-        })
-      }
+        });
+
+      } 
     
 
     componentDidMount(){
@@ -29,11 +45,13 @@ class Events extends React.Component{
       //load cached data from localStorage into state and prevent loading,
       //and re-fetching data for some seconds else load and fetch data
       if(!!localStorage.eventlyDataCache && JSON.parse(localStorage.eventlyDataCache).length >= 1){
+        
         this.setState({events: JSON.parse(localStorage.getItem('eventlyDataCache')), loading: false});
-        this.interval = setInterval(this.fetchData, 3000);
+        this.interval = setInterval(this.fetchData, 1000);
         //localStorage.setItem('eventlyDataCache',JSON.stringify([]))
+
       }else{
-        this.interval = setInterval(this.fetchData, 3000);
+        this.interval = setInterval(this.fetchData, 2000);
       }
     }
 
@@ -53,7 +71,7 @@ class Events extends React.Component{
             </div>
             {this.state.loading || (
               <div className="events-label">
-                {this.state.events.length} Upcoming Event
+                {this.state.events.length || 'No '} Upcoming Event
                 {this.state.events.length > 1 ? "s " : " "}
                 <i className="fa fa-clock" aria-hidden="true"></i>
               </div>
@@ -74,7 +92,7 @@ class Events extends React.Component{
                 <div style={{padding: '5% 0 0 1.5%',fontSize: '2.5rem', fontWeight: '700', color: '#555'}}>Loading...</div>
               </div>
 
-              {this.state.events.map(function (event) {
+              {this.state.events.map((event) => {
                 return (
                   <li key={event._id} className="event">
                     <div

@@ -9,7 +9,6 @@ class AddEditEvent extends React.Component {
         super(props);
         this.attributeIsSupported = this.attributeIsSupported.bind(this);
         this.calcSec = this.calcSec.bind(this);
-        this.returnRefValue = this.returnRefValue.bind(this);
         this.calcDate = this.calcDate.bind(this);
 
         this.eventName = React.createRef();
@@ -54,10 +53,6 @@ class AddEditEvent extends React.Component {
 
     }
 
-    returnRefValue = (ref) => {
-      return !!this.ref.current.value ? this.ref.current.value : null
-    }
-
     calcDate = () => {
 
       //change inputted date and time to seconds
@@ -65,16 +60,21 @@ class AddEditEvent extends React.Component {
       
     }
 
+    //prevent user from entering trailing spaces in event name
     handleEmptyEventName = (event) => {
       event.target.value.startsWith(" ") ? event.target.value = "" : event.target.value
     }
 
+    //prevent user from entering trailing spaces in event location
     handleEmptyLocation = (event) => {
       event.target.value.startsWith(" ") ? event.target.value = "" : event.target.value
     }
 
+    //create new event
     handleCreateEvent = (event) => {
+
       event.preventDefault();
+
       //construct the json data to post to server
       const payload = {
         eventName: this.eventName.current.value.trim(),
@@ -88,7 +88,10 @@ class AddEditEvent extends React.Component {
         createdAt: new Date().getTime(),
         notificationEmail: this.email.current.value
       };
+
+      //if user is adding new event
       if(this.state.formInCreateState){
+
         axios.post("http://localhost:4000/api/add", payload).then((res)=>{
           if(res.status === 200){
             console.log('data stored');
@@ -96,20 +99,26 @@ class AddEditEvent extends React.Component {
             //Clear Cache So as to cause loading in homepage/events page
             localStorage.setItem('eventlyDataCache', JSON.stringify([]));
             this.props.history.push('/');
+          } else {
+            console.log('Error Adding')
           }
         }).catch((err)=>{
           console.log(err)
         });
-      }else if(!this.state.formInCreateState){
+
+      }//else if user editing event
+      else if(!this.state.formInCreateState){
+
         axios.put('http://localhost:4000/api/modify/' + this.state.editingId, payload).then((res)=>{
           if(res.status == 200){
             console.log('Updated');
             this.props.history.push('/');
           }else{
-            console.log('Failed'+res)
+            console.log('Failed '+res)
           }
-        })
+        });
       }
+
     }
 
     componentDidMount(){
@@ -141,27 +150,27 @@ class AddEditEvent extends React.Component {
 
         //transforming startDate into date
         //First Algorithm::
-        /* var dt = new Date(event.startDate).toLocaleDateString().split('/');//Convert date to array
-        var mnt = dt[0].length === 1 ? '0'+dt[0] : dt[0];//prefix month with trailing 0 if less than 10
-        var dy = dt[1].length === 1 ? '0' + dt[1] : dt[1];//prefix month with trailing 0 if less than 10
-        var date = [dt[2]/*year*///,mnt,dy].join('-');//rearrange date into yy:mm:dd */
+        /* let dt = new Date(event.startDate).toLocaleDateString().split('/');//Convert date to array
+        let mnt = dt[0].length === 1 ? '0'+dt[0] : dt[0];//prefix month with trailing 0 if less than 10
+        let dy = dt[1].length === 1 ? '0' + dt[1] : dt[1];//prefix month with trailing 0 if less than 10
+        let date = [dt[2]/*year*///,mnt,dy].join('-');//rearrange date into yy:mm:dd */
 
         //Second Algorithm
-        var dte = new Date(event.startDate).toISOString();
-        var date = dte.substring(0, dte.indexOf('T'));
+        let dte = new Date(event.startDate).toISOString();
+        let date = dte.substring(0, dte.indexOf('T'));
 
         //Transforming startDate into Time
-        var tme = new Date(event.startDate).toISOString();
-        var time = tme.substr(tme.indexOf('T', 4) + 1, 5);
+        let tme = new Date(event.startDate).toTimeString();
+        let time = tme.substr(0, 8);
 
         //transforming duration from seconds to dd:hh:mm:ss
-        var sec = event.duration;
-        var day = Math.floor(sec / 86400)
+        let sec = event.duration;
+        let day = Math.floor(sec / 86400)
         sec %= 86400
-        var hour = Math.floor(sec / 3600)
+        let hour = Math.floor(sec / 3600)
         sec %= 3600
-        var min = Math.floor(sec / 60)
-        var seconds = sec % 60
+        let min = Math.floor(sec / 60)
+        let seconds = sec % 60
 
         //Populate Input tags with fetched data through refs
         this.eventName.current.value = event.eventName;
@@ -178,6 +187,7 @@ class AddEditEvent extends React.Component {
         this.description.current.value = event.description;
       })
       } else if (!this.props.match.params.id) {
+        
         this.setState({ formInCreateState: true });
         document.querySelector('header .add-btn').setAttribute('style', `display: ${this.state.formInCreateState ? 'none' : 'initial'}`);
       }
