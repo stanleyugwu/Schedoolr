@@ -166,13 +166,13 @@ let requestCounter = 0;
 //Get Events
 app.get("/api/events", (req, res) => {
     requestCounter+=1;
-    console.log('Client Wants Events ' + requestCounter);
+    console.log(requestCounter + ' Request Received! (Events)');
     Events.find((err, events)=>{
         if(err){
             res.status(400).send(err);
         }else{
             res.status(200).json(events);
-            console.log('Events Sent!')
+            console.log('Request Satisfied (Events Sent!)')
         }
     })
 });
