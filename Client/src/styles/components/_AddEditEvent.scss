@@ -23,7 +23,11 @@ form.add-form {
             text-transform: capitalize;
             padding-bottom: 2%;
             &:before {
-                content: "\f0c8 ";
+                content: "\1f539 ";
+            }
+            sup {
+                color: #ff0000bf;
+                font-size: xx-small;
             }
         }
         input {
@@ -114,4 +118,31 @@ form.add-form {
 input[type=number]::-webkit-inner-spin-button,
 input[type=number]::-webkit-outer-spin-button {
     opacity: 1;
+}
+
+.info-box {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #999;
+    width: 100%;
+    text-align: center;
+    align-items: center;
+    padding: 2%;
+    h1 {
+        color: $skyblue;
+    }
+    .fa-check-circle {
+        color: deepskyblue;
+    }
+    .x {
+        font-size: 3rem;
+        color: red;
+    }
+    p {
+        font-size: larger;
+        font-weight: 550;
+        padding-top: 5%;
+        color: $bg;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    }
 }

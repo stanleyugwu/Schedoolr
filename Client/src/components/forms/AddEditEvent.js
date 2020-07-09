@@ -2,6 +2,8 @@ import React from  'react';
 import DateTime from "react-datetime";
 import '../../../node_modules/react-datetime/css/react-datetime.css';
 import axios from 'axios';
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
 class AddEditEvent extends React.Component {
 
@@ -93,29 +95,116 @@ class AddEditEvent extends React.Component {
       if(this.state.formInCreateState){
 
         axios.post("http://localhost:4000/api/add", payload).then((res)=>{
+
           if(res.status === 200){
+
+            //if added to database
+
             console.log('data stored');
 
             //Clear Cache So as to cause loading in homepage/events page
-            localStorage.setItem('eventlyDataCache', JSON.stringify([]));
+            localStorage.clear('eventlyDataCache')
             this.props.history.push('/');
+
           } else {
-            console.log('Error Adding')
+            
+            //if not added to database
+            confirmAlert({
+              customUI: ({ onClose }) => {
+              {setTimeout(onClose, 2000)}
+
+                return (
+                  <div className="custom-ui info-box">
+                    <span className='x'>&#10060;</span>
+                    <h3>Failed To Add Event!!</h3>
+                    <p style={{fontSize: '1.8rem'}}>Please check the details and try again!!</p>
+                  </div>
+                );
+              },
+            });
           }
         }).catch((err)=>{
-          console.log(err)
+
+          //if cant connect to server
+          console.log(err);
+
+          confirmAlert({
+            customUI: ({ onClose }) => {
+              {
+                setTimeout(onClose, 7000);
+              }
+              return (
+                <div className="custom-ui info-box">
+                  <span className='x'>&#10060;</span>
+                  <h3>Connection Lost!!</h3>
+                  <p style={{ fontSize: "1.8rem" }}>
+                    Make sure you are connected to the internet and try again!!
+                  </p>
+                </div>
+              );
+            },
+          });
+
         });
 
-      }//else if user editing event
+      }
+      //if user editing event
       else if(!this.state.formInCreateState){
 
         axios.put('http://localhost:4000/api/modify/' + this.state.editingId, payload).then((res)=>{
+
           if(res.status == 200){
-            console.log('Updated');
-            this.props.history.push('/');
-          }else{
-            console.log('Failed '+res)
+
+            //if updated in database
+            confirmAlert({
+              customUI: ({ onClose }) => {
+                //&#10060 x &#9745 chk &#9989 wchk 
+                { setTimeout(onClose, 2000) }
+
+                return (
+                  <div className="custom-ui info-box">
+                    <i className="fa fa-check-circle fa-3x" aria-hidden="true"></i>
+                    <p>Event Updated Successfully..</p>
+                  </div>
+                );
+              },
+            });
+
+            setTimeout(this.props.history.push('/'), 2000);
+
+          }else if (res.status == 400){
+
+            //if not updated in database
+            confirmAlert({
+              customUI: ({ onClose }) => {
+                //&#10060 x &#9745 chk &#9989 wchk 
+                { setTimeout(onClose, 2000) }
+
+                return (
+                  <div className="custom-ui info-box">
+                    <span className='x'>&#10060;</span>
+                    <p>Event Modification Failed. please check the details and try again</p>
+                  </div>
+                );
+              },
+            });
           }
+        }).catch((err)=>{
+          //if cant connect to server
+          console.log(err)
+          confirmAlert({
+            customUI: ({ onClose }) => {
+              //&#10060 x &#9745 chk &#9989 wchk 
+              { setTimeout(onClose, 80000) }
+
+              return (
+                <div className="custom-ui info-box">
+                  <span className='x'>&#10060;</span>
+                  <p>Connection Lost!! Please make sure you're connected to the internet and try again</p>
+                </div>
+              );
+            },
+          });
         });
       }
 
@@ -185,9 +274,31 @@ class AddEditEvent extends React.Component {
         this.email.current.value = event.notificationEmail;
         this.color.current.value = event.color;
         this.description.current.value = event.description;
+
+      }).catch((err)=>{
+
+        //if cant fetch event to edit from server 
+        console.log(err);
+        confirmAlert({
+          customUI: ({ onClose }) => {
+            {
+              setTimeout(onClose, 8000);
+            }
+            return (
+              <div className="custom-ui info-box">
+                <span className='x'>&#10060;</span>
+                <h3>Event Not Loaded!!</h3>
+                <p style={{ fontSize: "1.8rem" }}>
+                  Make sure you are connected to the internet and reload the page..
+                </p>
+              </div>
+            );
+          },
+        });
       })
       } else if (!this.props.match.params.id) {
         
+        //if fetched event to edit
         this.setState({ formInCreateState: true });
         document.querySelector('header .add-btn').setAttribute('style', `display: ${this.state.formInCreateState ? 'none' : 'initial'}`);
       }
@@ -198,10 +309,11 @@ class AddEditEvent extends React.Component {
           <form className="add-form" onSubmit={this.handleCreateEvent}>
             <p className="form-label">{this.state.formInCreateState ? 'Add New Event' : 'Editing Event'}</p>
             <div className="form-field name">
-              <p className="field-label">Event Name:</p>
+              <p className="field-label">Event Name: <sup><i className="fas fa-asterisk  fa-1x  "></i></sup></p>
               <input
                 placeholder="Enter Event Name"
                 list="events"
+                autoFocus={true}
                 type="text"
                 defaultValue=""
                 required
@@ -219,7 +331,7 @@ class AddEditEvent extends React.Component {
             </div>
 
             <div className="form-field date">
-              <p className="field-label">Event Date:</p>
+              <p className="field-label">Event Date: <sup><i className="fas fa-asterisk  fa-1x  "></i></sup></p>
               {this.attributeIsSupported("date") &&
               this.attributeIsSupported("time") ? (
                 <div className="datetime-wrapper">
@@ -314,7 +426,7 @@ class AddEditEvent extends React.Component {
             </div>
 
             <div className="form-field location">
-              <p className="field-label">Event Location:</p>
+              <p className="field-label">Event Location: <sup><i className="fas fa-asterisk  fa-1x  "></i></sup></p>
               <input
                 placeholder="Enter event venue"
                 type="text"

@@ -83,7 +83,35 @@ div.event-card {
             font-weight: initial;
             overflow: hidden;
             height: 0px;
+            word-break: break-all;
             transition: all 0.5s ease-in;
         }
+    }
+}
+
+.confirm-box {
+    box-shadow: 2px 3px 15px #999;
+    min-width: 300px;
+    background: $bg;
+    border-radius: 10px;
+    width: 50%;
+    padding: 1% 6% 6% 6%;
+    font-family: Calibri;
+    h1 {
+        color: #ddd;
+    }
+    p {
+        color: #eee;
+        margin-bottom: 7%;
+        font-size: larger;
+        font-weight: 500;
+    }
+    button {
+        padding: 3% 15%;
+        background: $skyblue;
+        margin: 2% 6% 0 0;
+        border: 0;
+        font-weight: 550;
+        color: $bg;
     }
 }

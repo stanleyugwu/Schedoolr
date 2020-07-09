@@ -1,15 +1,19 @@
 main.main {
-    .filters-tab {
-        padding: 3% 0% 1% 6%;
-        color: #444;
+    .gone-off {
+        background: red;
+        text-align: center;
         font-weight: 550;
-        font-size: large;
-        cursor: pointer;
+        padding: 1%;
+        margin-bottom: -3%;
+        font-family: helvetica;
+        color: $white;
     }
-    .events-label {
-        padding: 4% 0 0 10%;
-        font-size: 2.5rem;
-        color: #888;
+    .events-count-label {
+        p {
+            padding: 7% 0 2% 10%;
+            font-size: 2.5rem;
+            color: #888;
+        }
     }
     ul.events-list {
         display: flex;
@@ -29,6 +33,25 @@ main.main {
             width: 280px;
             height: initial;
             display: inline-table;
+        }
+    }
+    .info-box {
+        background: $bg;
+        border-radius: 10px;
+        box-shadow: 0 0 15px #999;
+        width: 100%;
+        text-align: center;
+        align-items: center;
+        padding: 2%;
+        h3 {
+            color: $skyblue;
+        }
+        p {
+            font-size: larger;
+            font-weight: 550;
+            padding-top: 3%;
+            color: $skyblue;
+            font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
         }
     }
 }

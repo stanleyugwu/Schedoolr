@@ -5,9 +5,16 @@ class EditEvent extends React.Component{
         super(props);
     }
 
+    componentDidMount(){
+        if(this.props.match.params.id){
+            alert('yu')
+        }
+    }
     render(){
         return (
-            <div>Edit</div>
+            <div>
+                
+            </div>
         )
     }
 }

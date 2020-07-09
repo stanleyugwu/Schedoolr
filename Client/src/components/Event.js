@@ -1,6 +1,8 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import axios from 'axios';
+import { confirmAlert } from 'react-confirm-alert'; // Import
+import 'react-confirm-alert/src/react-confirm-alert.css'; // Import css
 
 
 class Event extends React.Component{
@@ -57,12 +59,31 @@ class Event extends React.Component{
 
     //delete event
     handleDelete = (id) => {
-        axios.delete('http://localhost:4000/api/delete/' + id).then((res)=>{
-            console.log(res.data)
-            if(res.status == 200){
-                
-            }
-            //this.props.history.push('/');
+
+
+        confirmAlert({
+          customUI: ({ onClose }) => {
+            return (
+              <div className="custom-ui confirm-box">
+                <h1>Delete Event &#128465;</h1>
+                <p>Are you sure you want to delete this event?</p>
+                <button onClick={onClose}>No</button>
+                <button
+                  onClick={() => {
+                    axios.delete("http://localhost:4000/api/delete/" + id).then((res) => {
+                        if (res.status == 200) {
+
+                            onClose();
+                            localStorage.clear('eventlyDataCache');
+                            this.props.history.push('/');
+                        } else{
+                            alert('Failed to Delete, Please Try Again!..')
+                        }
+                      });
+                  }}>Yes</button>
+              </div>
+            );
+          },
         });
          
     }
