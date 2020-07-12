@@ -2,8 +2,7 @@ header.header {
     background: $bg;
     .date-plate {
         text-align: center;
-        color: $white;
-        font-family: 'Courier New', Courier, monospace;
+        color: #ddd;
         font-size: 2rem;
         span.fa {
             color: $skyblue;
@@ -51,6 +50,7 @@ header.header {
         ul {
             text-align: left;
             li {
+                white-space: nowrap;
                 .navlink {
                     color: $skyblue;
                     transition: all .3s ease-in-out;

@@ -75,7 +75,6 @@ class Event extends React.Component{
 
                             onClose();
                             localStorage.clear('eventlyDataCache');
-                            this.props.history.push('/');
                         } else{
                             alert('Failed to Delete, Please Try Again!..')
                         }

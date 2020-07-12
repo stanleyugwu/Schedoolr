@@ -82,7 +82,7 @@ class Events extends React.Component{
           }
       });
 
-    } 
+     } 
     
 
     componentDidMount(){
@@ -119,12 +119,12 @@ class Events extends React.Component{
             </div>}
               <div
                 className="events-count-label"
-                style={{ display: (this.state.offline || this.state.loading) ? 'none' : 'initial' }}
-              ><p>
+                style={{ display: (this.state.offline || this.state.loading) ? 'none' : 'block' }}
+              ><span>
                 {this.state.events.length || "No "} Upcoming Event
                 {this.state.events.length > 1 ? "s " : " "}
                 <i className="fa fa-clock" aria-hidden="true"></i>
-                </p>
+                </span>
               </div>
 
             <ul className="events-list" style={{ background: this.state.offline ? '#f3f3f3' : 'initial'}}>

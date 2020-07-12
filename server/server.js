@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const nodemailer = require('nodemailer');
 const cors = require('cors');
 const PORT = 4000;
 
@@ -29,90 +30,151 @@ con.once('open', ()=>{console.log("Server has established connection to database
 app.use(cors({origin: '*'}));
 
 //Send 10 minutes Email
-const sendReminderMail = (data) => {
-    console.log(data.eventName + 'starting in less than 10 minutes');
+
+let transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: 'eventSkedulr@gmail.com',
+        pass: 'obiorastanley1'
+    },
+    tls: { rejectUnauthorized: false }/* ,
+    debug: true,
+    logger: true */
+});
+
+
+async function sendReminderMail (data) {
+
+    let mailOptions = {
+        from: 'notif@skedulr.com',
+        to: data.notificationEmail,
+        subject: 'Event Starting Soon..',
+        html: `<h2>It's About Happening, Are You Ready?...</h2><p>Hello Dear,</p><p><b>The ${data.eventName} Event You registered, will be starting 10 minutes from now, so we sent you this mail to notify you of it.</b></p><p>The event will be taking place at ${data.location}. Do have a great day with your event..#best wishes</p>`
+    }
+    clearInterval(daemon1Interval);
+
+    const send = await transporter.sendMail(mailOptions).catch((err)=>{
+        console.log(err)
+    });
+
+    console.log(data.eventName + ' starting in less than 10 minutes');
+
+    setTimeout(()=>{setInterval(daemon1, 2000)}, 5000)
+    
+    return (!!send)
+  
 }
 
 //send event-started Email
-const sendEventStartedMail = (data) => {
-    console.log(data.eventName + 'started')
+async function sendEventStartedMail (data) {
+
+    let mailOptions = {
+        from: 'notif@skedulr.com',
+        to: data.notificationEmail,
+        subject: 'Event Started..',
+        html: `<h2>It's Time!!...</h2><p>Hello Dear,</p><p><b>${data.eventName} must have begun now or is happening already, and we hope it's all going/went as planned.</b></p><p>Do have a great day with your event..#best wishes</p>`
+
+    }
+    clearInterval(daemon1Interval);
+
+    const send = await transporter.sendMail(mailOptions).catch((err) => {
+        console.log(err)
+    });
+
+    console.log(data.eventName + ' started');
+
+    setTimeout(() => { setInterval(daemon2, 500) }, 3000)
+
+    return (!!send)
+
+
 }
 
 //Daemon 1 (Background Process for tracking events time and sending reminder emails)
-setInterval(() => {
+const daemon1 = () => {
+        Events.find((err, events) => {
 
-    Events.find((err, events) => {
-
-        if (err) {
-            console.log('Error Accessing Table')
-        }
-
-        events.map((event) => {
-
-            const remainingTime = Math.ceil((new Date(event.startDate).getTime() - new Date().getTime()) / 60000); //Calculate Remaining Minutes Before Event Starts
-            
-            if (remainingTime > 0 && remainingTime <= 10/*notification time*/ && event.notificationEmail && !event.notified) {
-
-                sendReminderMail(event);//Send Email
-
-                event.notified = true;//mark event as notified
-
-                //Save back event
-                event.save((err, res) => {
-                    if(err){
-                        console.log(err);
-                        event.notified = false;//set room for re-mailing if failed to save
-                    }
-                });
-                
-            } else if (remainingTime > 0 && remainingTime <= 10/*notification time*/ && !!event.notificationEmail && !event.notified) {
-                event.notified = true;
-                event.save((err, res) => {
-                    if (err) {
-                        console.log(err);
-                        event.notified = false;
-                    }
-                })
-                
+            if (err) {
+                console.log('Error Accessing Table')
             }
+
+            events.map(async (event) => {
+
+                const remainingTime = Math.ceil((new Date(event.startDate).getTime() - new Date().getTime()) / 60000); //Calculate Remaining Minutes Before Event Starts
+
+                if (remainingTime > 0 && remainingTime <= 10/*notification time*/ && event.notificationEmail && !event.notified) {
+                   
+                     var sentEmail = await sendReminderMail(event).catch(console.log)
+
+                    if(sentEmail){
+
+                        event.notified = true;//mark event as notified
+
+                        console.log(event.notified)
+
+                        //Save back event
+                        event.save((err, res) => {
+                            if (err) {
+                                console.log(err);
+                                event.notified = false;//set room for re-mailing if failed to save
+                            }
+                        });
+                    }
+
+                } else if (remainingTime > 0 && remainingTime <= 10/*notification time*/ && !!event.notificationEmail && !event.notified) {
+                    event.notified = true;
+                    event.save((err, res) => {
+                        if (err) {
+                            console.log(err);
+                            event.notified = false;
+                        }
+                    })
+
+                }
+            });
         });
-    });
-}, 2000);
+}
+
+const daemon1Interval = setInterval(daemon1, 2000);
 
 
 //Daemon 2
-setInterval(() => {
+const daemon2 = () => {
+
+
     const date = new Date().getTime();
     Events.find((err, events) => {
-        if(err){console.log('Error Accessing Table')}
-        else{
-            events.map((event)=>{
-                if(new Date(event.startDate).getTime() <= date && Math.floor((date - new Date(event.startDate).getTime()) / 60000) <= 2 && event.notificationEmail.length > 1/*if event has reached or passed unknowingly and its less than 2 minutes passed and theres email for notif, then send mail  */){
-                    
-                    sendEventStartedMail(event);
+        if (err) { console.log('Error Accessing Table') }
+        else {
+            events.map((event) => {
+                if (new Date(event.startDate).getTime() <= date && Math.floor((date - new Date(event.startDate).getTime()) / 60000) <= 2 && event.notificationEmail.length > 1/*if event has reached or passed unknowingly and its less than 2 minutes passed and theres email for notif, then send mail  */) {
 
-                    const newDoc = {
-                        eventName: event.eventName,
-                        startDate: event.startDate,
-                        duration: event.duration,
-                        location: event.location,
-                        description: event.description,
-                        attendees: event.attendees,
-                        color: event.color,
-                        notified: event.notified,
-                        createdAt: event.createdAt,
-                        notificationEmail: event.notificationEmail
-                    };
+                    const sentMail = sendEventStartedMail(event).catch(console.log);
 
-                    const expired = new Expired(newDoc);
+                    if (sentMail) {
+                        const newDoc = {
+                            eventName: event.eventName,
+                            startDate: event.startDate,
+                            duration: event.duration,
+                            location: event.location,
+                            description: event.description,
+                            attendees: event.attendees,
+                            color: event.color,
+                            notified: event.notified,
+                            createdAt: event.createdAt,
+                            notificationEmail: event.notificationEmail
+                        };
 
-                    expired.save();//move event to expired
-                    event.remove();//remove from events
+                        const expired = new Expired(newDoc);
 
-                } else if (new Date(event.startDate).getTime() <= date && Math.floor((date - new Date(event.startDate).getTime()) / 60000) > 5){
-                    
+                        expired.save();//move event to expired
+                        event.remove();//remove from events
+                    }
+
+                } else if (new Date(event.startDate).getTime() <= date && Math.floor((date - new Date(event.startDate).getTime()) / 60000) > 5) {
+
                     console.log('Event reached but too late for reminding');
-                    
+
                     const newDoc = {
                         eventName: event.eventName,
                         startDate: event.startDate,
@@ -156,7 +218,9 @@ setInterval(() => {
             });
         }
     });
-}, 500)
+}
+
+const daemon2Interval = setInterval(daemon2, 500)
 
 //Daemons Ended
 
@@ -166,13 +230,13 @@ let requestCounter = 0;
 //Get Events
 app.get("/api/events", (req, res) => {
     requestCounter+=1;
-    console.log(requestCounter + ' Request Received! (Events)');
+    //console.log(requestCounter + ' Request Received! (Events)');
     Events.find((err, events)=>{
         if(err){
             res.status(400).send(err);
         }else{
             res.status(200).json(events);
-            console.log('Request Satisfied (Events Sent!)')
+            console.log( requestCounter + ' Request Satisfied (Events Sent!)')
         }
     })
 });
@@ -235,6 +299,5 @@ app.put("/api/modify/:id", (req, res) => {
     }
     });
 });
-
 
 app.listen(PORT, ()=>{console.log('Server Started Successfully!!','\nRunning On Port :'+PORT)})
