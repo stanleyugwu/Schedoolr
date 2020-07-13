@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const nodemailer = require('nodemailer');
 const cors = require('cors');
-const PORT = 4000;
+const PORT = process.env.PORT || 4000;
 
 
 const app = express();
@@ -21,7 +21,10 @@ mongoose.set('useUnifiedTopology',true);
 
 //Connect to MongoDB
 const database = 'Evently';
-mongoose.connect('mongodb://127.0.0.1:27017/'+database, {useNewUrlParser: true})
+const connection = 'mongodb + srv://schedoolr:obiorastan1@schedoolr.flef2.mongodb.net/Evently?retryWrites=true&w=majority'
+mongoose.connect(connection, {useNewUrlParser: true}).catch((err)=>{
+    console.log(err.message)
+})
 const con = mongoose.connection;
 con.once('open', ()=>{console.log("Server has established connection to database:",database)});
 

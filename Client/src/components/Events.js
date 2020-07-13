@@ -128,7 +128,7 @@ class Events extends React.Component{
               </div>
 
             <ul className="events-list" style={{ background: this.state.offline ? '#f3f3f3' : 'initial'}}>
-              <div style={{display: this.state.loading ? "block" : "none", marginTop: '3%'}}>
+              <div style={{display: this.state.loading ? "block" : "none", marginTop: '5%'}}>
                 <Loader
                   type="BallTriangle"
                   color="#001c40"
@@ -147,7 +147,7 @@ class Events extends React.Component{
               </div>
               {this.state.offline &&
                 <div>
-                   <img src="/images/noConnection.gif" onClick={()=>{location.reload()}} style={{cursor: 'pointer'}}></img>
+                   <img src="/images/noConnection.gif" onClick={()=>{location.reload()}} style={{cursor: 'pointer', width: '100%', height: '100%'}}></img>
                 </div>}
               {this.state.events.map((event) => {
                 return (

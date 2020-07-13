@@ -1,6 +1,6 @@
 @media screen and (min-width: 801px) {
     #app {
-        width: 80%;
+        width: 85%;
         margin: auto;
     }
 }
@@ -75,10 +75,45 @@
     form.add-form {
         width: 80%;
     }
+    header.header {
+        .side-menu {
+            ul {
+                text-align: center;
+            }
+        }
+        .header__inner {
+            .add-btn {
+                padding: inherit;
+                padding-top: 2.5%;
+                display: none;
+                button {
+                    position: initial;
+                    .fa {
+                        font-size: 7.5rem;
+                    }
+                }
+            }
+        }
+    }
 }
 
 @media screen and (min-width: 769px) {
     form.add-form {
         width: 60%;
+    }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1000px) {
+    header.header {
+        .header__inner {
+            .add-btn {
+                button {
+                    right: 10%;
+                    .fa {
+                        font-size: 7.5rem;
+                    }
+                }
+            }
+        }
     }
 }

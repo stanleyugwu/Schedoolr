@@ -4,6 +4,7 @@ header.header {
         text-align: center;
         color: #ddd;
         font-size: 2rem;
+        padding-top: 2.5%;
         span.fa {
             color: $skyblue;
             font-size: + 1.2em
@@ -20,7 +21,7 @@ header.header {
                 color: $bg;
                 border-radius: 100%;
                 right: 13%;
-                top: 95px;
+                top: 125px;
                 border: none;
                 outline: none;
                 .fa {
@@ -37,7 +38,7 @@ header.header {
     }
     .menu-logo-wrapper__logo {
         img {
-            width: 180px;
+            width: 200px;
             height: 70px;
             min-width: 130px;
         }
@@ -51,6 +52,7 @@ header.header {
             text-align: left;
             li {
                 white-space: nowrap;
+                line-height: 1.6;
                 .navlink {
                     color: $skyblue;
                     transition: all .3s ease-in-out;
