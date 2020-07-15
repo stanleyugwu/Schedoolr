@@ -21,9 +21,9 @@ mongoose.set('useUnifiedTopology',true);
 
 //Connect to MongoDB
 const database = 'Schedoolr';
-const connection = 'mongodb://localhost:27017/' + database// + database;//mongodb + srv:schedoolr:obiorastan1@schedoolr.flef2.mongodb.net/Schedoolr?retryWrites=true&w=majority';
+const connection = 'mongodb+srv://stanley:obiorastan@schedoolr.n82yn.mongodb.net/Schedoolr?retryWrites=true&w=majority';
 mongoose.connect(connection, {useNewUrlParser: true}).then(()=>{
-    console.log("Server has established connection to database:", database)
+    console.log("Server connected to", database + ' database')
 }
 ).catch((err)=>{
     console.log(err.message)
@@ -239,7 +239,8 @@ app.get("/api/events", (req, res) => {
             res.status(400).send(err);
         }else{
             res.status(200).json(events);
-            console.log( requestCounter + ' Request Satisfied (Events Sent!)')
+            console.clear()
+            console.log( requestCounter + ' Request Satisfied (Events Sent!)');
         }
     })
 });
@@ -303,4 +304,4 @@ app.put("/api/modify/:id", (req, res) => {
     });
 });
 
-app.listen(PORT, ()=>{console.log('Server Started Successfully!!','\nRunning On Port :'+PORT)})
+app.listen(PORT, ()=>{console.log('Server Running On Port: '+PORT)})
