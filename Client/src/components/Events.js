@@ -29,8 +29,8 @@ class Events extends React.Component{
 
           //fetched events
 
-          if (!!!localStorage.eventlyDataCache) {
-            localStorage.setItem('eventlyDataCache', JSON.stringify(res.data));
+          if (!!!localStorage.schedoolrDataCache) {
+            localStorage.setItem('schedoolrDataCache', JSON.stringify(res.data));
           }
 
           this.setState(() => {
@@ -67,8 +67,8 @@ class Events extends React.Component{
 
           //if there's cached event show error panel else display full error image
           if (
-            !!localStorage.eventlyDataCache &&
-            JSON.parse(localStorage.eventlyDataCache).length > 0
+            !!localStorage.schedoolrDataCache &&
+            JSON.parse(localStorage.schedoolrDataCache).length > 0
           ) {
 
             this.setState({goneOffline: true});
@@ -91,14 +91,14 @@ class Events extends React.Component{
 
       //load cached data from localStorage into state and prevent loading,
       //and re-fetching data for some seconds else load and fetch data
-      if(!!localStorage.eventlyDataCache && JSON.parse(localStorage.eventlyDataCache).length > 0){
+      if(!!localStorage.schedoolrDataCache && JSON.parse(localStorage.schedoolrDataCache).length > 0){
         
-        this.setState({events: JSON.parse(localStorage.getItem('eventlyDataCache')), loading: false});
+        this.setState({events: JSON.parse(localStorage.getItem('schedoolrDataCache')), loading: false});
         this.interval = setInterval(this.fetchData, 1000);
-        //localStorage.setItem('eventlyDataCache',JSON.stringify([]))
+        //localStorage.setItem('schedoolrDataCache',JSON.stringify([]))
 
       }else{
-        this.interval = setInterval(this.fetchData, 2000);
+        this.interval = setInterval(this.fetchData, 1000);
       }
     }
 
@@ -106,7 +106,7 @@ class Events extends React.Component{
       //when unmounting component, stop fetching new data, and store current data
       //in localStorage as cache so as to prevent refetch when component remounts
       clearInterval(this.interval);
-      localStorage.setItem('eventlyDataCache',JSON.stringify(this.state.events));
+      localStorage.setItem('schedoolrDataCache',JSON.stringify(this.state.events));
     }
 
     render(){

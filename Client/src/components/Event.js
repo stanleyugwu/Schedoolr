@@ -74,7 +74,7 @@ class Event extends React.Component{
                         if (res.status == 200) {
 
                             onClose();
-                            localStorage.clear('eventlyDataCache');
+                            localStorage.clear('schedoolrDataCache');
                         } else{
                             alert('Failed to Delete, Please Try Again!..')
                         }

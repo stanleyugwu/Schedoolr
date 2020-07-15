@@ -103,7 +103,7 @@ class AddEditEvent extends React.Component {
             console.log('data stored');
 
             //Clear Cache So as to cause loading in homepage/events page
-            localStorage.clear('eventlyDataCache')
+            localStorage.clear('schedoolrDataCache')
             this.props.history.push('/');
 
           } else {
