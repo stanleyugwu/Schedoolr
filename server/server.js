@@ -227,6 +227,11 @@ const daemon2Interval = setInterval(daemon2, 500)
 
 //Daemons Ended
 
+app.get("/", (req, res) => {
+   
+    res.status(200).send('Hello Welcome');
+
+});
 
 let requestCounter = 0;
 
