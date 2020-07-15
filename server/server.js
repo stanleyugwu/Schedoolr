@@ -20,19 +20,19 @@ mongoose.set('useCreateIndex',true);
 mongoose.set('useUnifiedTopology',true);
 
 //Connect to MongoDB
-const database = 'Evently';
-const connection = 'mongodb + srv://schedoolr:obiorastan1@schedoolr.flef2.mongodb.net/Evently?retryWrites=true&w=majority'
-mongoose.connect(connection, {useNewUrlParser: true}).catch((err)=>{
+const database = 'Schedoolr';
+const connection = 'mongodb://localhost:27017/' + database// + database;//mongodb + srv:schedoolr:obiorastan1@schedoolr.flef2.mongodb.net/Schedoolr?retryWrites=true&w=majority';
+mongoose.connect(connection, {useNewUrlParser: true}).then(()=>{
+    console.log("Server has established connection to database:", database)
+}
+).catch((err)=>{
     console.log(err.message)
 })
-const con = mongoose.connection;
-con.once('open', ()=>{console.log("Server has established connection to database:",database)});
-
 
 //Enable CORS
 app.use(cors({origin: '*'}));
 
-//Send 10 minutes Email
+//Nodemail transporter
 
 let transporter = nodemailer.createTransport({
     service: 'gmail',
@@ -49,10 +49,10 @@ let transporter = nodemailer.createTransport({
 async function sendReminderMail (data) {
 
     let mailOptions = {
-        from: 'notif@skedulr.com',
+        from: 'Events@Schedoolr.com',
         to: data.notificationEmail,
         subject: 'Event Starting Soon..',
-        html: `<h2>It's About Happening, Are You Ready?...</h2><p>Hello Dear,</p><p><b>The ${data.eventName} Event You registered, will be starting 10 minutes from now, so we sent you this mail to notify you of it.</b></p><p>The event will be taking place at ${data.location}. Do have a great day with your event..#best wishes</p>`
+        html: `<h2>It's About To Begin...</h2><p>Hello Dear,</p><p><b>The ${data.eventName} Event You registered, will be starting 10 minutes from now, so we sent you this mail to notify you of it.</b></p><p>The event will be taking place at ${data.location}. Do have a great day with your event..#best wishes</p>`
     }
     clearInterval(daemon1Interval);
 
@@ -72,7 +72,7 @@ async function sendReminderMail (data) {
 async function sendEventStartedMail (data) {
 
     let mailOptions = {
-        from: 'notif@skedulr.com',
+        from: 'Events@Schedoolr.com',
         to: data.notificationEmail,
         subject: 'Event Started..',
         html: `<h2>It's Time!!...</h2><p>Hello Dear,</p><p><b>${data.eventName} must have begun now or is happening already, and we hope it's all going/went as planned.</b></p><p>Do have a great day with your event..#best wishes</p>`
