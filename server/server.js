@@ -236,10 +236,10 @@ app.get("/", (req, res) => {
 let requestCounter = 0;
 
 //Get Events
-app.get("/api/events", (req, res) => {
+app.get("/api/events", async (req, res) => {
     requestCounter+=1;
-    //console.log(requestCounter + ' Request Received! (Events)');
-    Events.find((err, events)=>{
+    console.log(requestCounter + ' Request Received! (Events)');
+    await Events.find((err, events)=>{
         if(err){
             res.status(400).send(err);
         }else{
