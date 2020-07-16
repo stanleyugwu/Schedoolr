@@ -7,7 +7,8 @@
     "scripts": {
         "build": "webpack",
         "dev-server": "webpack-dev-server",
-        "serve": "live-server public"
+        "serve": "live-server public",
+        "start": "node app.js"
     },
     "dependencies": {
         "axios": "^0.19.2",
