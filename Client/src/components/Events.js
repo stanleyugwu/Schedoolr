@@ -72,7 +72,7 @@ class Events extends React.Component{
           ) {
 
             this.setState({goneOffline: true});
-            setInterval(()=>{console.clear()}, 10000)//clear console every 10 seconds
+            //setInterval(()=>{console.clear()}, 10000)//clear console every 10 seconds
 
           } else {
 
