@@ -94,7 +94,7 @@ class AddEditEvent extends React.Component {
       //if user is adding new event
       if(this.state.formInCreateState){
 
-        axios.post("http://localhost:4000/api/add", payload).then((res)=>{
+        axios.post("https://schedoolr-backend.herokuapp.com/api/add", payload).then((res)=>{
 
           if(res.status === 200){
 
@@ -151,7 +151,7 @@ class AddEditEvent extends React.Component {
       //if user editing event
       else if(!this.state.formInCreateState){
 
-        axios.put('http://localhost:4000/api/modify/' + this.state.editingId, payload).then((res)=>{
+        axios.put('https://schedoolr-backend.herokuapp.com/api/modify/' + this.state.editingId, payload).then((res)=>{
 
           if(res.status == 200){
 
@@ -216,7 +216,7 @@ class AddEditEvent extends React.Component {
       //If theres id in the url parameter, fetch the event with id from database and populate the form
       if (this.props.match.params.id) {
 
-        axios.get('http://localhost:4000/api/get/' + this.props.match.params.id).then((res)=>{
+        axios.get('https://schedoolr-backend.herokuapp.com/api/get/' + this.props.match.params.id).then((res)=>{
         this.setState({ formInCreateState: false });
         this.setState({editingId: this.props.match.params.id});
 

@@ -26,7 +26,7 @@ mongoose.connect(connection, {useNewUrlParser: true}).then(()=>{
     console.log("Server connected to", database + ' database')
 }
 ).catch((err)=>{
-    console.log(err.message)
+    console.log('Database Error:' + err.message)
 })
 
 //Enable CORS
@@ -236,10 +236,10 @@ app.get("/", (req, res) => {
 let requestCounter = 0;
 
 //Get Events
-app.get("/api/events", async (req, res) => {
+app.get("/api/events", (req, res) => {
     requestCounter+=1;
     console.log(requestCounter + ' Request Received! (Events)');
-    await Events.find((err, events)=>{
+    Events.find((err, events)=>{
         if(err){
             res.status(400).send(err);
         }else{

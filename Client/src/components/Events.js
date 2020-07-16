@@ -22,7 +22,6 @@ class Events extends React.Component{
 
     //fetch events from database and set state
     fetchData = () => {
-      axios.get('https://schedoolr-backend.herokuapp.com/').then((res) => {console.log(res)})
 
         axios.get('https://schedoolr-backend.herokuapp.com/api/events').then((res) => {
 
@@ -106,8 +105,9 @@ class Events extends React.Component{
     componentWillUnmount(){
       //when unmounting component, stop fetching new data, and store current data
       //in localStorage as cache so as to prevent refetch when component remounts
+      localStorage.setItem('schedoolrDataCache', JSON.stringify(this.state.events));
+
       clearInterval(this.interval);
-      localStorage.setItem('schedoolrDataCache',JSON.stringify(this.state.events));
     }
 
     render(){

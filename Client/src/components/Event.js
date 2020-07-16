@@ -70,7 +70,7 @@ class Event extends React.Component{
                 <button onClick={onClose}>No</button>
                 <button
                   onClick={() => {
-                    axios.delete("http://localhost:4000/api/delete/" + id).then((res) => {
+                    axios.delete("https://schedoolr-backend.herokuapp.com/api/delete/" + id).then((res) => {
                         if (res.status == 200) {
 
                             onClose();
