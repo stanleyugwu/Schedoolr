@@ -22,8 +22,9 @@ class Events extends React.Component{
 
     //fetch events from database and set state
     fetchData = () => {
+      axios.get('https://schedoolr-backend.herokuapp.com/').then((res) => {console.log(res)})
 
-        axios.get('http://localhost:4000/api/events').then((res) => {
+        axios.get('https://schedoolr-backend.herokuapp.com/api/events').then((res) => {
 
         if(res.status == 200){
 
