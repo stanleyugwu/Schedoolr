@@ -5,11 +5,12 @@
     "author": "Stanley",
     "license": "MIT",
     "scripts": {
-        "build": "webpack",
-        "dev-server": "webpack-dev-server",
+        "build": "webpack-dev-server",
+        "dev-server": "webpack",
         "serve": "live-server public",
-        "start": "node ./src/app.js"
+        "start": "npm run build"
     },
+
     "dependencies": {
         "axios": "^0.19.2",
         "babel-cli": "6.24.1",
@@ -34,6 +35,7 @@
         "react-router-dom": "^5.2.0",
         "react-widgets": "^4.5.0",
         "sass-loader": "^7.3.1",
+        "serve": "^11.3.2",
         "style-loader": "^1.1.4",
         "webpack": "^4.42.1",
         "webpack-cli": "^3.3.11",
