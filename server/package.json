@@ -17,7 +17,7 @@
         "express": "^4.17.1",
         "mongoose": "^5.9.20",
         "nodemailer": "^6.4.10",
-        "validator": "^13.1.1"
+        "validator": "^13.7.0"
     },
     "devDependencies": {
         "nodemon": "^2.0.4"
