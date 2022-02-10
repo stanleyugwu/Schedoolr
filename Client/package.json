@@ -23,7 +23,7 @@
         "live-server": "^1.2.0",
         "mb-react-color-picker": "^1.2.0-dev.14",
         "moment": "^2.27.0",
-        "node-sass": "^4.13.1",
+        "node-sass": "^7.0.0",
         "normalize.css": "^8.0.1",
         "react": "^16.13.1",
         "react-confirm-alert": "^2.6.1",
